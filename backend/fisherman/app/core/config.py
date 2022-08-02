@@ -1,14 +1,12 @@
 import logging
 from functools import lru_cache
-from app.core.settings.app import AppSettings
-from app.core.settings.base import BaseAppSettings
-from app.core.settings.enums import AppEnv
-from app.core.settings.app import AppSettings
-
 from typing import Dict, Type
 
 from pydantic import PostgresDsn, SecretStr
 
+from app.core.settings.app import AppSettings
+from app.core.settings.base import BaseAppSettings
+from app.core.settings.enums import AppEnv
 
 
 class DevAppSettings(AppSettings):
@@ -20,6 +18,7 @@ class DevAppSettings(AppSettings):
 
     class Config(AppSettings.Config):
         env_file = ".env"
+
 
 class TestAppSettings(AppSettings):
     debug: bool = True
@@ -34,6 +33,7 @@ class TestAppSettings(AppSettings):
 
     logging_level: int = logging.DEBUG
 
+
 class ProdAppSettings(AppSettings):
     class Config(AppSettings.Config):
         env_file = "prod.env"
@@ -42,9 +42,8 @@ class ProdAppSettings(AppSettings):
 environement: Dict[AppEnv, Type[AppSettings]] = {
     AppEnv.dev: DevAppSettings,
     AppEnv.prod: None,
-    AppEnv.test: None
+    AppEnv.test: None,
 }
-
 
 
 @lru_cache
@@ -52,4 +51,3 @@ def get_app_settings() -> AppSettings:
     app_env = BaseAppSettings().app_env
     config = environement[app_env]
     return config()
-

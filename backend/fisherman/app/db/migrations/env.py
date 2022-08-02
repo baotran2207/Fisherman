@@ -10,8 +10,6 @@ sys.path.append(str(pathlib.Path(__file__).resolve().parents[3]))
 from app.core.config import get_app_settings  # isort:skip
 from app.db.base import Base  # noqa
 
-
-
 SETTINGS = get_app_settings()
 SQLALCHEMY_DATABASE_URI = SETTINGS.SQLALCHEMY_DATABASE_URI
 

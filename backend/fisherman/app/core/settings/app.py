@@ -1,35 +1,35 @@
 import logging
 import sys
 from types import FrameType
-
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 from loguru import logger
-from typing import Any, Dict, List, Tuple, Optional, cast
-
-from pydantic import PostgresDsn, SecretStr, validator, HttpUrl
+from pydantic import HttpUrl, PostgresDsn, SecretStr, validator
 
 from app.core.settings.base import BaseAppSettings
 
 
 class BaseHandler(logging.Handler):
-
     def emit(self, record: logging.LogRecord) -> None:
         try:
             level = logger.level(record.levelname).name
         except ValueError:
             level = str(record.levelno)
-        frame ,depth = logging.currentframe(), 2
+        frame, depth = logging.currentframe(), 2
         while frame.f_code.co_filename == logging.__file__:
             frame = cast(FrameType, frame.f_back)
             depth += 1
 
-        logger.opt(
-            depth=depth, exception=record.exc_info
-        ).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
 
 
 class AppSettings(BaseAppSettings):
 
+    # Init User
+    WEBMASTER_EMAIL: str
+    WEBMASTER_PASSWORD: str
 
     # DB
     POSTGRES_SERVER: str
@@ -51,8 +51,8 @@ class AppSettings(BaseAppSettings):
         )
 
     # logging
-    logging_level:int  = logging.info
-    loggers: Tuple[str, str] =  ("uvicorn.asgi", "uvicorn.access")
+    logging_level: int = logging.info
+    loggers: Tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
 
     def configure_logging(self) -> None:
         logging.getLogger().handlers = [BaseHandler()]
@@ -64,8 +64,7 @@ class AppSettings(BaseAppSettings):
 
     # Security
     secret_key: SecretStr
-    jwt_token_prefix: str = "Token" # token? Bearer ?
-
+    jwt_token_prefix: str = "Token"  # token? Bearer ?
 
     # sentry
     SENTRY_DSN: Optional[HttpUrl] = None
@@ -76,14 +75,13 @@ class AppSettings(BaseAppSettings):
             return None
         return v
 
-
     # fastapi only
     debug: bool = False
     docs_url: str = "/docs"
     openapi_prefix: str = ""
     openapi_url: str = "/openapi.json"
     redoc_url: str = "/redoc"
-    title = 'Fisherman'
+    title = "Fisherman"
 
     @property
     def fastapi_kwargs(self) -> Dict[str, Any]:
