@@ -1,33 +1,37 @@
 # This file is for quick and dirty implement patterns
 from abc import ABC, abstractmethod
+from asyncio import protocols
 from dataclasses import dataclass
-from typing import Callable, Protocol
+from typing import Callable, Protocol, List
+from xmlrpc.client import boolean
 
 
-class MailProvider(ABC):
+class MailProvider(Protocol):
     @abstractmethod
-    def connect(self):
+    def connect(self) -> str:
         pass
 
     @abstractmethod
-    def send(self, msg):
+    def send(self, msg) -> str:
         pass
 
 
-class SMTPProvider(MailProvider):
-    def send(self, msg):
-        print(f"Send with SMTP {msg}")
+class SMTPProvider:
+    def send(self, msg) -> str:
+        return f"Send with SMTP {msg}"
 
     def connect(self):
-        print("connected SMTP")
+        return f"connected SMTP"
 
 
-class SESProvider(MailProvider):
+class SESProvider:
     def send(self, msg):
-        print(f"send with ses {msg}")
+        return (f"send with ses {msg}")
+
+    def connect(self) -> List:
+        return ('connect sqs')
 
 
-@dataclass
 class MailSender:
     provider: MailProvider = SMTPProvider
 
@@ -40,6 +44,8 @@ class MailSender:
 
 
 def send_email() -> None:
+
+    int
 
     settings_email_sender_type = "SMTP"
     messsage = "Test message "
